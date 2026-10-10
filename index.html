@@ -7,20 +7,15 @@
 <meta name="mobile-web-app-capable" content="yes">
 <title>Speed Shooting</title>
 <style>
-/* =========================================================
-   BASE
-   ========================================================= */
 :root{
   --police: sans-serif-condensed, "Roboto Condensed", "Arial Narrow", system-ui, sans-serif;
   --os:#f1ede4;
   --laiton:#d9b45c;
   --rouge:#e5483a;
   --plaque:rgba(12,13,15,.58);
-  --duree-recharge:900ms;           /* durée totale du rechargement, en ms */
-  --cw:100px;                       /* largeur d'une cible (réglée par le JS) */
-  --k:1;                            /* échelle de l'arme (réglée par le JS) */
-
-  /* matières de l'arme */
+  --duree-recharge:900ms;
+  --cw:100px;
+  --k:1;
   --c-cote:linear-gradient(180deg,#2b2e33 0%,#1a1c1f 35%,#0f1012 100%);
   --c-dessus:linear-gradient(90deg,#16171a 0%,#34373c 46%,#2a2d31 56%,#15161a 100%);
   --c-face:linear-gradient(90deg,#121316 0%,#272a2e 50%,#121316 100%);
@@ -34,9 +29,6 @@ button{font:inherit;color:inherit}
 #camera{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;background:#16181a}
 #monde{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:2}
 
-/* =========================================================
-   CIBLES (silhouettes de stand de tir)
-   ========================================================= */
 .cible{position:absolute;left:0;top:0;width:0;height:0;visibility:hidden;will-change:transform}
 .cible-glisse{position:absolute;left:0;top:0;width:0;height:0;
   transition:transform .2s ease-out;will-change:transform}
@@ -54,9 +46,6 @@ button{font:inherit;color:inherit}
 @keyframes plus{0%{opacity:0;transform:translateY(6px) scale(.7)}18%{opacity:1;transform:translateY(-6px) scale(1.15)}
   100%{opacity:0;transform:translateY(-46px) scale(1)}}
 
-/* =========================================================
-   VISEUR (réticule duplex classique)
-   ========================================================= */
 #viseur{position:fixed;left:50%;top:50%;width:150px;height:150px;margin:-75px 0 0 -75px;z-index:7;
   pointer-events:none;filter:drop-shadow(0 0 1.5px rgba(0,0,0,.9))}
 #viseur .marque{opacity:0}
@@ -64,9 +53,6 @@ button{font:inherit;color:inherit}
 @keyframes marque{0%{opacity:1;transform:scale(.7)}100%{opacity:0;transform:scale(1.25)}}
 #viseur .marque{transform-origin:75px 75px}
 
-/* =========================================================
-   ARME EN 3D CSS  —  vue FPS
-   ========================================================= */
 .scene{position:fixed;left:50%;top:50%;width:880px;height:412px;margin:-206px 0 0 -440px;
   transform:scale(var(--k));perspective:520px;perspective-origin:50% 50%;pointer-events:none;z-index:6}
 .p3d{transform-style:preserve-3d}
@@ -135,9 +121,6 @@ button{font:inherit;color:inherit}
 .glissiere{transform:translateZ(var(--g-repos,0px));transition:transform .06s ease-out}
 .scene.vide{--g-repos:26px}
 
-/* =========================================================
-   ANIMATIONS
-   ========================================================= */
 .scene.tir #arme-recul{animation:recul .17s cubic-bezier(.2,.7,.2,1)}
 @keyframes recul{
   0%  {transform:translate3d(0,0,0) rotateX(0)}
@@ -185,9 +168,6 @@ button{font:inherit;color:inherit}
   86%,100%{transform:translateZ(0)}
 }
 
-/* =========================================================
-   INTERFACE
-   ========================================================= */
 .plaque{background:var(--plaque);border-radius:6px;padding:6px 12px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 #score,#munitions{position:fixed;top:max(10px,env(safe-area-inset-top));z-index:20;pointer-events:none;text-shadow:0 1px 2px #000}
 #score{left:max(14px,env(safe-area-inset-left));display:flex;align-items:baseline;gap:8px}
@@ -629,7 +609,8 @@ async function choisirNerf() {
 
 async function connecterGatt() {
   etatBluetooth(false, 'Connexion au Nerf…');
-  const serveur = await nerf.device.gatt.connect(); // <-- CORRIGÉ ICI (serveur au lieu de servoir)
+  if (!nerf.device.gatt) throw new Error("GATT non disponible");
+  const serveur = await nerf.device.gatt.connect();
   const service = await serveur.getPrimaryService(SERVICE_UUID);
   if (nerf.car) nerf.car.removeEventListener('characteristicvaluechanged', surNotification);
   nerf.car = await service.getCharacteristic(CHARACTERISTIC_UUID);
@@ -686,15 +667,26 @@ $('btn-nerf').addEventListener('click', async () => {
   if (!navigator.bluetooth) { afficherErreur('Web Bluetooth indisponible.'); return; }
   try {
     if (!nerf.device) await choisirNerf();
-  } catch (e) { afficherErreur(e.name === 'NotFoundError' ? 'Aucun appareil choisi.' : 'Bluetooth : ' + e.message); return; }
-  try { await connecterGatt(); }
-  catch (e) { afficherErreur('Connexion au Nerf impossible : ' + e.message); return; }
-  try { await lancerJeu(); } catch (e) { afficherErreur(e.message); }
+  } catch (e) { 
+    afficherErreur(e && e.name === 'NotFoundError' ? 'Aucun appareil choisi.' : 'Bluetooth : ' + (e && e.message ? e.message : 'Annulé ou échec')); 
+    return; 
+  }
+  try { 
+    await connecterGatt(); 
+  } catch (e) { 
+    afficherErreur('Connexion au Nerf impossible : ' + (e && e.message ? e.message : 'Erreur GATT (réessaie ou redémarre le Nerf)')); 
+    return; 
+  }
+  try { 
+    await lancerJeu(); 
+  } catch (e) { 
+    afficherErreur(e && e.message ? e.message : 'Erreur de lancement'); 
+  }
 });
 
 $('btn-seul').addEventListener('click', async () => {
   afficherErreur('');
-  try { await lancerJeu(); } catch (e) { afficherErreur(e.message); }
+  try { await lancerJeu(); } catch (e) { afficherErreur(e && e.message ? e.message : 'Erreur'); }
 });
 
 $('btn-reco').addEventListener('click', async () => {
@@ -732,4 +724,5 @@ boucle();
 </script>
 </body>
 </html>
+
 
