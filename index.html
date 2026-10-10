@@ -609,10 +609,18 @@ async function choisirNerf() {
 
 async function connecterGatt() {
   etatBluetooth(false, 'Connexion au Nerf…');
-  if (!nerf.device.gatt) throw new Error("GATT non disponible");
+  if (!nerf.device.gatt) throw new Error("GATT indisponible sur l'appareil");
+  
+  // Petite pause de stabilisation pour Bluefy
+  await new Promise(r => setTimeout(r, 300));
+  
   const serveur = await nerf.device.gatt.connect();
+  await new Promise(r => setTimeout(r, 200));
+  
   const service = await serveur.getPrimaryService(SERVICE_UUID);
-  if (nerf.car) nerf.car.removeEventListener('characteristicvaluechanged', surNotification);
+  if (nerf.car) {
+    try { nerf.car.removeEventListener('characteristicvaluechanged', surNotification); } catch(err){}
+  }
   nerf.car = await service.getCharacteristic(CHARACTERISTIC_UUID);
   nerf.car.addEventListener('characteristicvaluechanged', surNotification);
   await nerf.car.startNotifications();
@@ -641,14 +649,14 @@ async function garderEcranAllume() {
 document.addEventListener('visibilitychange', () => { if (!document.hidden && jeuActif) garderEcranAllume(); });
 
 async function lancerJeu() {
-  try { await demanderOrientation(); } catch (e) { throw new Error(e.message); }
+  try { await demanderOrientation(); } catch (e) { throw new Error(e.message || 'Erreur gyroscope'); }
   try { await demarrerCamera(); }
-  catch (e) { throw new Error('Caméra indisponible : autorise-la pour ce site.'); }
+  catch (e) { throw new Error('Caméra indisponible ou refusée.'); }
   if (SONS) { try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); ac.resume(); } catch (e) {} }
   garderEcranAllume();
   accueil.classList.add('cache');
   jeuActif = true;
-  if (nerf.device) etatBluetooth(nerf.device.gatt.connected, $('bt-etat').textContent);
+  if (nerf.device && nerf.device.gatt) etatBluetooth(nerf.device.gatt.connected, $('bt-etat').textContent);
   const t0 = performance.now();
   (function attendre() {
     if (orient.ok || performance.now() - t0 > 1200) {
@@ -664,23 +672,23 @@ function afficherErreur(msg) { $('erreur').textContent = msg; }
 
 $('btn-nerf').addEventListener('click', async () => {
   afficherErreur('');
-  if (!navigator.bluetooth) { afficherErreur('Web Bluetooth indisponible.'); return; }
+  if (!navigator.bluetooth) { afficherErreur('Web Bluetooth non supporté par ce navigateur.'); return; }
   try {
     if (!nerf.device) await choisirNerf();
   } catch (e) { 
-    afficherErreur(e && e.name === 'NotFoundError' ? 'Aucun appareil choisi.' : 'Bluetooth : ' + (e && e.message ? e.message : 'Annulé ou échec')); 
+    afficherErreur('Sélection annulée ou indisponible.'); 
     return; 
   }
   try { 
     await connecterGatt(); 
   } catch (e) { 
-    afficherErreur('Connexion au Nerf impossible : ' + (e && e.message ? e.message : 'Erreur GATT (réessaie ou redémarre le Nerf)')); 
+    afficherErreur('Échec connexion Bluetooth (redémarre le Nerf).'); 
     return; 
   }
   try { 
     await lancerJeu(); 
   } catch (e) { 
-    afficherErreur(e && e.message ? e.message : 'Erreur de lancement'); 
+    afficherErreur(e && e.message ? e.message : 'Erreur de démarrage du jeu'); 
   }
 });
 
@@ -724,5 +732,6 @@ boucle();
 </script>
 </body>
 </html>
+
 
 
