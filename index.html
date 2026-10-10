@@ -36,8 +36,6 @@ button{font:inherit;color:inherit}
 
 /* =========================================================
    CIBLES (silhouettes de stand de tir)
-   .cible        : suit le gyroscope, positionnée par le JS à chaque image
-   .cible-glisse : porte la transition « transform 0.2s ease-out » du déplacement
    ========================================================= */
 .cible{position:absolute;left:0;top:0;width:0;height:0;visibility:hidden;will-change:transform}
 .cible-glisse{position:absolute;left:0;top:0;width:0;height:0;
@@ -57,7 +55,7 @@ button{font:inherit;color:inherit}
   100%{opacity:0;transform:translateY(-46px) scale(1)}}
 
 /* =========================================================
-   VISEUR (réticule duplex classique)
+   VISEUR
    ========================================================= */
 #viseur{position:fixed;left:50%;top:50%;width:150px;height:150px;margin:-75px 0 0 -75px;z-index:7;
   pointer-events:none;filter:drop-shadow(0 0 1.5px rgba(0,0,0,.9))}
@@ -67,11 +65,7 @@ button{font:inherit;color:inherit}
 #viseur .marque{transform-origin:75px 75px}
 
 /* =========================================================
-   ARME EN 3D CSS  —  vue FPS, canon vers le fond de l'écran
-   Chaque « .b » est un pavé : ses 6 faces sont créées par le JS.
-   Variables d'un pavé : --w largeur (x), --h hauteur (y), --d longueur (z)
-                         --x --y --z position de son centre
-   Axes : x vers la droite, y vers le bas, z vers toi (le canon va vers -z).
+   ARME EN 3D CSS
    ========================================================= */
 .scene{position:fixed;left:50%;top:50%;width:880px;height:412px;margin:-206px 0 0 -440px;
   transform:scale(var(--k));perspective:520px;perspective-origin:50% 50%;pointer-events:none;z-index:6}
@@ -79,7 +73,6 @@ button{font:inherit;color:inherit}
 #arme-recul{position:absolute;left:440px;top:206px;width:0;height:0}
 #arme-pose,#arme,.arme-corps,.glissiere,.pontet,.poignee,.arme-chargeur{position:absolute;left:0;top:0;width:0;height:0}
 
-/* Position de repos : en bas, au centre, légèrement incliné vers l'avant */
 #arme{transform:translate3d(0,100px,-40px) scale3d(1.1,1.1,1.1) rotateX(4deg);
   --pose-grip:translate3d(0,44px,112px) rotateX(14deg)}
 #arme-pose{transform-origin:0 150px 0}
@@ -100,7 +93,6 @@ button{font:inherit;color:inherit}
 .b>.ha{transform:rotateX(90deg) translateZ(calc(var(--h)/2))}
 .b>.ba{transform:rotateX(-90deg) translateZ(calc(var(--h)/2))}
 
-/* --- Glissière : sérrations arrière + éjecteur --- */
 .sl>.dr{background:
   repeating-linear-gradient(90deg,#040405 0 2px,#41444a 2px 3px,transparent 3px 7px) 0 7px/46px calc(100% - 14px) no-repeat,
   var(--c-cote)}
@@ -115,15 +107,12 @@ button{font:inherit;color:inherit}
 .sl>.ar{background:
   radial-gradient(circle at 50% 36%,#0a0a0b 0 3px,#3a3d42 3.5px 4.5px,transparent 5px),var(--c-face)}
 
-/* --- Organes de visée (points blancs) --- */
 .ps>.ar,.ms>.ar{background:radial-gradient(circle at 50% 52%,#f3f5f2 0 2px,#17181b 2.6px)}
 .ps>.dr,.ps>.ga,.ps>.ha,.ms>.dr,.ms>.ga,.ms>.ha{background:#1d1f22}
 
-/* --- Canon : rail supérieur à encoches --- */
 .ca>.ha{background:repeating-linear-gradient(0deg,#050506 0 4px,#33363c 4px 11px)}
 .ca>.dr,.ca>.ga{background:linear-gradient(180deg,#26292e 0%,#17181b 40%,#0d0e10 100%)}
 
-/* --- Poignée : quadrillage --- */
 .gr>.ar,.gr>.dr,.gr>.ga{background:
   repeating-linear-gradient(45deg,rgba(255,255,255,.085) 0 1px,transparent 1px 5px),
   repeating-linear-gradient(-45deg,rgba(255,255,255,.085) 0 1px,transparent 1px 5px),
@@ -131,7 +120,6 @@ button{font:inherit;color:inherit}
   box-shadow:inset 0 0 0 4px #202226,inset 0 0 0 5px rgba(0,0,0,.6)}
 .gr>.ha{background:#191b1e}
 
-/* --- Chargeur : fenêtres de comptage + plaque de base --- */
 .mg>.dr,.mg>.ga{background:
   radial-gradient(circle at 50% 50%,#d9b45c 0 2.3px,#030304 3px,transparent 3.6px) 0 4px/100% 16px repeat-y,
   linear-gradient(90deg,#1a1c1f,#26292d 50%,#1a1c1f)}
@@ -139,7 +127,6 @@ button{font:inherit;color:inherit}
 .pl>.ar,.pl>.dr,.pl>.ga{background:linear-gradient(180deg,#3a3d43,#18191c)}
 .pl>.ba{background:linear-gradient(180deg,#26282c,#101113)}
 
-/* --- Arme : poses et positions --- */
 .poignee,.arme-chargeur{transform:var(--pose-grip)}
 .flash{position:absolute;left:0;top:0;width:0;height:0;transform:translate3d(0,-3px,-186px);opacity:0}
 .flash::before,.flash::after{content:"";position:absolute}
@@ -153,14 +140,14 @@ button{font:inherit;color:inherit}
 .scene.vide{--g-repos:26px}
 
 /* =========================================================
-   ANIMATION : TIR (recul sec et puissant)
+   ANIMATIONS
    ========================================================= */
 .scene.tir #arme-recul{animation:recul .17s cubic-bezier(.2,.7,.2,1)}
 @keyframes recul{
   0%  {transform:translate3d(0,0,0) rotateX(0)}
-  14% {transform:translate3d(0,9px,46px) rotateX(-11deg)}     /* l'arme part vers l'arrière et le haut */
+  14% {transform:translate3d(0,9px,46px) rotateX(-11deg)}
   46% {transform:translate3d(0,3px,12px) rotateX(-3deg)}
-  72% {transform:translate3d(0,-1px,-3px) rotateX(1deg)}      /* petit rebond */
+  72% {transform:translate3d(0,-1px,-3px) rotateX(1deg)}
   100%{transform:translate3d(0,0,0) rotateX(0)}
 }
 .scene.tir .glissiere{animation:glissiere-tir .17s linear}
@@ -173,15 +160,6 @@ button{font:inherit;color:inherit}
 @keyframes flash{0%{opacity:1;transform:translate3d(0,-3px,-186px) scale(.55)}
   100%{opacity:0;transform:translate3d(0,-3px,-186px) scale(1.25)}}
 
-/* =========================================================
-   ANIMATION : RECHARGEMENT (≈ 0,9 s, nerveux)
-   0-15 %  : l'arme pivote sur le côté, canon baissé
-   10-33 % : le chargeur glisse hors de la poignée et tombe
-   33-45 % : bref instant
-   45-62 % : un chargeur neuf remonte d'un coup dans la poignée
-   62-70 % : choc d'insertion
-   70-100 %: l'arme revient en position de visée (léger rebond)
-   ========================================================= */
 .scene.recharge #arme-pose{animation:rechargement var(--duree-recharge) linear both}
 @keyframes rechargement{
   0%  {transform:none;animation-timing-function:cubic-bezier(.12,.8,.2,1)}
@@ -189,7 +167,7 @@ button{font:inherit;color:inherit}
   30% {transform:translate3d(-42px,-100px,-14px) rotateZ(-31deg) rotateX(11deg) rotateY(7deg);animation-timing-function:ease-in-out}
   45% {transform:translate3d(-44px,-102px,-14px) rotateZ(-29deg) rotateX(12deg) rotateY(7deg);animation-timing-function:ease-in}
   62% {transform:translate3d(-44px,-104px,-14px) rotateZ(-29deg) rotateX(11deg) rotateY(7deg);animation-timing-function:cubic-bezier(.3,0,.2,1)}
-  66% {transform:translate3d(-44px,-90px,-14px) rotateZ(-29deg) rotateX(15deg) rotateY(7deg);animation-timing-function:ease-out} /* choc */
+  66% {transform:translate3d(-44px,-90px,-14px) rotateZ(-29deg) rotateX(15deg) rotateY(7deg);animation-timing-function:ease-out}
   70% {transform:translate3d(-42px,-100px,-14px) rotateZ(-30deg) rotateX(12deg) rotateY(7deg);animation-timing-function:cubic-bezier(.25,.9,.3,1)}
   86% {transform:translate3d(5px,4px,-3px) rotateZ(3deg) rotateX(-2.5deg) rotateY(-1deg);animation-timing-function:ease-in-out}
   100%{transform:none}
@@ -261,7 +239,7 @@ button{font:inherit;color:inherit}
   font-size:21px;font-weight:700;padding:14px;letter-spacing:.02em}
 .gros:active{filter:brightness(.85)}
 .gros.second{background:transparent;color:var(--os);border:1px solid rgba(255,255,255,.35);font-size:16px;font-weight:400;padding:10px;margin-top:10px}
-#erreur{min-height:20px;margin-top:12px;font-size:14px;color:#ff9b8f}
+#erreur{min-height:20px;margin-top:12px;font-size:14px;color:#ff9b8f;word-break:break-word}
 
 #tourner{display:none;position:fixed;inset:0;z-index:60;background:#0b0c0d;align-items:center;justify-content:center;
   text-align:center;font-size:22px;padding:30px}
@@ -274,13 +252,12 @@ button{font:inherit;color:inherit}
 <div id="monde"></div>
 <div id="eclair"></div>
 
-<!-- ================== ARME (corps + chargeur = 2 éléments séparés) ================== -->
+<!-- ================== ARME ================== -->
 <div class="scene" id="scene">
  <div id="arme-recul" class="p3d">
   <div id="arme-pose" class="p3d">
    <div id="arme" class="p3d">
 
-    <!-- 1) LE CORPS DE L'ARME -->
     <div class="arme-corps p3d">
       <div class="glissiere p3d">
         <div class="b sl" style="--w:40px;--h:44px;--d:206px;--y:0px;--z:57px"></div>
@@ -300,7 +277,6 @@ button{font:inherit;color:inherit}
       </div>
     </div>
 
-    <!-- 2) LE CHARGEUR (animé séparément) -->
     <div class="arme-chargeur p3d">
       <div class="b mg" style="--w:36px;--h:120px;--d:52px;--y:66px"></div>
       <div class="b pl" style="--w:42px;--h:9px;--d:58px;--y:130px"></div>
@@ -357,12 +333,8 @@ button{font:inherit;color:inherit}
 <script>
 'use strict';
 /* =========================================================
-   1. RÉGLAGES  —  modifie les valeurs ici
+   1. RÉGLAGES
    ========================================================= */
-
-/* Codes envoyés par le Nerf. Lance le jeu, appuie sur la gâchette et sur le bouton de
-   recharge : la valeur hexadécimale reçue s'affiche en haut de l'écran.
-   Recopie-la ici, telle qu'affichée (ex. "01" ou "01 00"). Vide = désactivé. */
 const CODE_TIR      = "";
 const CODE_RECHARGE = "";
 
@@ -370,11 +342,11 @@ const SERVICE_UUID        = "073e1435-85d1-455c-97cd-0b8262f20eac";
 const CHARACTERISTIC_UUID = "073e1436-85d1-455c-97cd-0b8262f20eac";
 
 const MUNITIONS_MAX  = 15;
-const FOV_HORIZONTAL = 62;   // champ de vision horizontal de la caméra arrière (°) : à ajuster si les cibles « glissent »
-const ECART_CARRE    = 9;    // demi-côté du carré formé par les 4 cibles (°)
-const TAILLE_CIBLE   = 6;    // largeur apparente d'une cible (°)
-const ZONE_TOUCHE    = 1.0;  // 1 = toute la silhouette compte ; 0.6 = plus exigeant
-const SONS           = true; // sons synthétisés (tir, clic, rechargement)
+const FOV_HORIZONTAL = 62;
+const ECART_CARRE    = 9;
+const TAILLE_CIBLE   = 6;
+const ZONE_TOUCHE    = 1.0;
+const SONS           = true;
 
 /* =========================================================
    2. OUTILS
@@ -389,7 +361,6 @@ const norm = s => String(s).toUpperCase().replace(/0X/g, '').replace(/[^0-9A-F]/
 const scene = $('scene'), monde = $('monde'), viseur = $('viseur'), accueil = $('accueil');
 const video = $('camera');
 
-/* Les 6 faces de chaque pavé de l'arme */
 document.querySelectorAll('.b').forEach(b => {
   b.innerHTML = '<i class="ar"></i><i class="av"></i><i class="ha"></i><i class="ba"></i><i class="ga"></i><i class="dr"></i>';
 });
@@ -401,9 +372,7 @@ let munitions = MUNITIONS_MAX, score = 0;
 let rechargement = false, jeuActif = false;
 
 /* =========================================================
-   4. GYROSCOPE → CAMÉRA VIRTUELLE
-   La caméra arrière regarde dans la direction -Z de l'appareil.
-   On reconstruit sa base (droite, haut, avant) dans un repère monde (est, nord, haut).
+   4. GYROSCOPE
    ========================================================= */
 const orient = { a: 0, b: 0, g: 0, ok: false };
 const cam = { r: [1, 0, 0], u: [0, 1, 0], f: [0, 0, -1] };
@@ -424,13 +393,13 @@ function angleEcran() {
 function calculerCamera() {
   const { a, b, g } = orient;
   const cX = Math.cos(b), sX = Math.sin(b), cY = Math.cos(g), sY = Math.sin(g), cZ = Math.cos(a), sZ = Math.sin(a);
-  const X = [cZ * cY - sZ * sX * sY, cY * sZ + cZ * sX * sY, -cX * sY];     // axe X de l'appareil dans le monde
-  const Y = [-cX * sZ,               cZ * cX,                sX];           // axe Y
-  const Z = [cY * sZ * sX + cZ * sY, sZ * sY - cZ * cY * sX, cX * cY];      // axe Z (sort de l'écran)
+  const X = [cZ * cY - sZ * sX * sY, cY * sZ + cZ * sX * sY, -cX * sY];
+  const Y = [-cX * sZ,               cZ * cX,                sX];
+  const Z = [cY * sZ * sX + cZ * sY, sZ * sY - cZ * cY * sX, cX * cY];
   const t = angleEcran() * DEG + correctionEcran, c = Math.cos(t), s = Math.sin(t);
-  cam.r = [X[0] * c - Y[0] * s, X[1] * c - Y[1] * s, X[2] * c - Y[2] * s];  // droite de l'écran
-  cam.u = [X[0] * s + Y[0] * c, X[1] * s + Y[1] * c, X[2] * s + Y[2] * c];  // haut de l'écran
-  cam.f = [-Z[0], -Z[1], -Z[2]];                                            // axe de la caméra arrière
+  cam.r = [X[0] * c - Y[0] * s, X[1] * c - Y[1] * s, X[2] * c - Y[2] * s];
+  cam.u = [X[0] * s + Y[0] * c, X[1] * s + Y[1] * c, X[2] * s + Y[2] * c];
+  cam.f = [-Z[0], -Z[1], -Z[2]];
 }
 
 function majVue() {
@@ -442,10 +411,9 @@ function majVue() {
 }
 addEventListener('resize', majVue);
 
-/* Place la visée « devant toi » et reforme le carré de cibles */
 function recentrer() {
   correctionEcran = 0; calculerCamera();
-  if (cam.u[2] < -0.2) { correctionEcran = Math.PI; calculerCamera(); }   // sens d'écran inversé : on corrige
+  if (cam.u[2] < -0.2) { correctionEcran = Math.PI; calculerCamera(); }
   const f = cam.f;
   base.yaw = Math.abs(f[2]) < 0.9 ? Math.atan2(f[0], f[1])
            : Math.atan2(cam.u[0], cam.u[1]) + (f[2] > 0 ? Math.PI : 0);
@@ -496,7 +464,6 @@ function placerCarre() {
   });
 }
 
-/* Projection d'une cible dans l'écran (perspective de la caméra réelle) */
 function projeter(dir) {
   const z = pscal(dir, cam.f);
   if (z < 0.25) return null;
@@ -531,7 +498,6 @@ function nouvellePosition(c) {
   return meilleur;
 }
 
-/* Collision avec le viseur (centre de l'écran) : ellipse couvrant la silhouette */
 function cibleVisee() {
   let best = null, vmin = Infinity;
   for (const c of cibles) {
@@ -549,14 +515,12 @@ function toucher(c) {
   score++; $('score-n').textContent = score;
   viseur.classList.remove('touche'); void viseur.offsetWidth; viseur.classList.add('touche');
 
-  // impact à l'endroit visé + éclat blanc
   const dx = (vue.w / 2 - c.x) / c.s, dy = (vue.h / 2 - c.y) / c.s;
   c.trou.style.left = (vue.cw / 2 + dx) + 'px';
   c.trou.style.top = (vue.cw * 0.5 + dy) + 'px';
   c.el.classList.add('touchee');
   plusUn(c.x, c.y - 30);
 
-  // nouvelle position aléatoire : la cible « file » vers elle en 0,2 s (transition CSS)
   const n = nouvellePosition(c);
   const nd = dirDe(n.yaw, n.pitch);
   const p = projeter(nd);
@@ -612,7 +576,7 @@ function recharger() {
   scene.classList.remove('tir');
   relancer(scene, 'recharge');
   son('recharge', d);
-  setTimeout(() => { munitions = MUNITIONS_MAX; majMunitions(); }, d * 0.62);   // chargeur neuf en place
+  setTimeout(() => { munitions = MUNITIONS_MAX; majMunitions(); }, d * 0.62);
   const fin = () => { rechargement = false; scene.classList.remove('recharge', 'vide'); };
   const secours = setTimeout(fin, d + 400);
   $('arme-pose').addEventListener('animationend', function f(e) {
@@ -633,7 +597,7 @@ $('mun-max').textContent = '/ ' + MUNITIONS_MAX;
 $('mun-n').textContent = MUNITIONS_MAX;
 
 /* =========================================================
-   7. SONS (synthétisés, aucun fichier)
+   7. SONS
    ========================================================= */
 let ac = null;
 function bruit(t0, duree, freq, gain, type) {
@@ -660,7 +624,7 @@ function son(nom, d) {
 }
 
 /* =========================================================
-   8. BLUETOOTH (Web Bluetooth)
+   8. BLUETOOTH (Robust & Safe Error Handling for Bluefy)
    ========================================================= */
 const nerf = { device: null, car: null };
 const historique = [];
@@ -670,7 +634,6 @@ function afficherDebug(hex) {
   $('bt-hex').innerHTML = historique.map((h, i) => `<b style="opacity:${(1 - i * 0.18).toFixed(2)}">${h}</b>`).join('');
 }
 
-/* Appelée à chaque signal reçu du Nerf */
 function analyserSignal(valeurHex) {
   afficherDebug(valeurHex);
   const v = norm(valeurHex);
@@ -690,60 +653,129 @@ function etatBluetooth(ok, texte) {
   $('btn-reco').style.display = (!ok && nerf.device && jeuActif) ? 'block' : 'none';
 }
 
-/* Doit être appelée directement par un clic (geste utilisateur obligatoire) */
+// Safely extracts error descriptions whether `e` is an Error object, string, DOMException, or undefined
+function getErrorMessage(err) {
+  if (!err) return "Erreur Bluetooth inconnue";
+  if (typeof err === "string") return err;
+  if (err.message && typeof err.message === "string" && err.message.trim() !== "") {
+    return err.message;
+  }
+  if (err.name && typeof err.name === "string") {
+    return `${err.name}: ${JSON.stringify(err)}`;
+  }
+  try {
+    return JSON.stringify(err);
+  } catch (e2) {
+    return String(err);
+  }
+}
+
 async function choisirNerf() {
-  nerf.device = await navigator.bluetooth.requestDevice({
-    acceptAllDevices: true,               // la manette n'annonce pas forcément son service : on liste tout
-    optionalServices: [SERVICE_UUID]
-  });
-  nerf.device.addEventListener('gattserverdisconnected', () => etatBluetooth(false, 'Nerf déconnecté'));
+  if (!navigator.bluetooth) {
+    throw new Error("L'API Web Bluetooth n'est pas disponible sur ce navigateur ou cette plateforme. Utilisez HTTPS.");
+  }
+  try {
+    nerf.device = await navigator.bluetooth.requestDevice({
+      acceptAllDevices: true,
+      optionalServices: [SERVICE_UUID]
+    });
+    if (nerf.device) {
+      nerf.device.removeEventListener('gattserverdisconnected', onDisconnected);
+      nerf.device.addEventListener('gattserverdisconnected', onDisconnected);
+    }
+  } catch (err) {
+    console.error("requestDevice error:", err);
+    throw new Error(getErrorMessage(err));
+  }
+}
+
+function onDisconnected() {
+  etatBluetooth(false, 'Nerf déconnecté');
 }
 
 async function connecterGatt() {
+  if (!nerf.device) {
+    throw new Error("Aucun appareil sélectionné.");
+  }
   etatBluetooth(false, 'Connexion au Nerf…');
-  const serveur = await nerf.device.gatt.connect();
-  const service = await serveur.getPrimaryService(SERVICE_UUID);
-  if (nerf.car) nerf.car.removeEventListener('characteristicvaluechanged', surNotification);
-  nerf.car = await service.getCharacteristic(CHARACTERISTIC_UUID);
-  nerf.car.addEventListener('characteristicvaluechanged', surNotification);
-  await nerf.car.startNotifications();
-  etatBluetooth(true, 'Nerf : ' + (nerf.device.name || 'connecté'));
+  
+  try {
+    if (!nerf.device.gatt) {
+      throw new Error("Objet GATT indisponible sur l'appareil.");
+    }
+    const serveur = await nerf.device.gatt.connect();
+    if (!servoir) {
+      throw new Error("Échec de connexion au serveur GATT.");
+    }
+    
+    const service = await serveur.getPrimaryService(SERVICE_UUID);
+    if (!service) {
+      throw new Error("Service GATT introuvable (Vérifiez le SERVICE_UUID).");
+    }
+
+    if (nerf.car) {
+      try {
+        nerf.car.removeEventListener('characteristicvaluechanged', surNotification);
+      } catch (e3) {}
+    }
+
+    nerf.car = await service.getCharacteristic(CHARACTERISTIC_UUID);
+    if (!nerf.car) {
+      throw new Error("Caractéristique GATT introuvable.");
+    }
+
+    nerf.car.removeEventListener('characteristicvaluechanged', surNotification);
+    nerf.car.addEventListener('characteristicvaluechanged', surNotification);
+    await nerf.car.startNotifications();
+    
+    etatBluetooth(true, 'Nerf : ' + (nerf.device.name || 'connecté'));
+  } catch (err) {
+    console.error("GATT connect error:", err);
+    throw new Error(getErrorMessage(err));
+  }
 }
 
 /* =========================================================
-   9. DÉMARRAGE : caméra, capteurs, écran allumé
+   9. DÉMARRAGE
    ========================================================= */
 async function demarrerCamera() {
-  const flux = await navigator.mediaDevices.getUserMedia({
-    video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false
-  });
-  video.srcObject = flux;
-  await video.play();
+  try {
+    const flux = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false
+    });
+    video.srcObject = flux;
+    await video.play();
+  } catch (err) {
+    throw new Error("Caméra indisponible : " + getErrorMessage(err));
+  }
 }
 
 async function demanderOrientation() {
   if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-    const r = await DeviceOrientationEvent.requestPermission();            // iOS
-    if (r !== 'granted') throw new Error('Accès au gyroscope refusé.');
+    try {
+      const r = await DeviceOrientationEvent.requestPermission();
+      if (r !== 'granted') throw new Error('Permission gyroscope refusée.');
+    } catch (err) {
+      throw new Error("Gyroscope refusé ou non supporté : " + getErrorMessage(err));
+    }
   }
 }
 
-let verrou = null;
 async function garderEcranAllume() {
-  try { verrou = await navigator.wakeLock.request('screen'); } catch (e) {}
+  try { if (navigator.wakeLock) await navigator.wakeLock.request('screen'); } catch (e) {}
 }
 document.addEventListener('visibilitychange', () => { if (!document.hidden && jeuActif) garderEcranAllume(); });
 
 async function lancerJeu() {
-  try { await demanderOrientation(); } catch (e) { throw new Error(e.message); }
-  try { await demarrerCamera(); }
-  catch (e) { throw new Error('Caméra indisponible : autorise-la pour ce site (HTTPS requis).'); }
+  await demanderOrientation();
+  await demarrerCamera();
   if (SONS) { try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); ac.resume(); } catch (e) {} }
   garderEcranAllume();
   accueil.classList.add('cache');
   jeuActif = true;
-  if (nerf.device) etatBluetooth(nerf.device.gatt.connected, $('bt-etat').textContent);
-  // on attend les premières mesures du gyroscope pour poser le carré de cibles
+  if (nerf.device && nerf.device.gatt && nerf.device.gatt.connected) {
+    etatBluetooth(true, 'Nerf : ' + (nerf.device.name || 'connecté'));
+  }
   const t0 = performance.now();
   (function attendre() {
     if (orient.ok || performance.now() - t0 > 1200) {
@@ -759,22 +791,30 @@ function afficherErreur(msg) { $('erreur').textContent = msg; }
 
 $('btn-nerf').addEventListener('click', async () => {
   afficherErreur('');
-  if (!navigator.bluetooth) { afficherErreur('Web Bluetooth indisponible : utilise Chrome sur Android, en HTTPS.'); return; }
   try {
-    if (!nerf.device) await choisirNerf();                 // 1er await = dans le geste utilisateur
-  } catch (e) { afficherErreur(e.name === 'NotFoundError' ? 'Aucun appareil choisi.' : 'Bluetooth : ' + e.message); return; }
-  try { await connecterGatt(); }
-  catch (e) { afficherErreur('Connexion au Nerf impossible : ' + e.message); return; }
-  try { await lancerJeu(); } catch (e) { afficherErreur(e.message); }
+    if (!nerf.device) {
+      await choisirNerf();
+    }
+    await connecterGatt();
+    await lancerJeu();
+  } catch (e) {
+    const msgFinal = getErrorMessage(e);
+    console.error("Erreur globale de connexion Nerf:", e);
+    afficherErreur('Connexion nerf impossible: ' + msgFinal);
+  }
 });
 
 $('btn-seul').addEventListener('click', async () => {
   afficherErreur('');
-  try { await lancerJeu(); } catch (e) { afficherErreur(e.message); }
+  try { await lancerJeu(); } catch (e) { afficherErreur(getErrorMessage(e)); }
 });
 
 $('btn-reco').addEventListener('click', async () => {
-  try { await connecterGatt(); } catch (e) { etatBluetooth(false, 'Reconnexion impossible'); }
+  try {
+    await connecterGatt();
+  } catch (e) {
+    etatBluetooth(false, 'Reconnexion impossible: ' + getErrorMessage(e));
+  }
 });
 
 $('btn-centre').addEventListener('click', recentrer);
