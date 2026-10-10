@@ -55,7 +55,7 @@ button{font:inherit;color:inherit}
   100%{opacity:0;transform:translateY(-46px) scale(1)}}
 
 /* =========================================================
-   VISEUR
+   VISEUR (réticule duplex classique)
    ========================================================= */
 #viseur{position:fixed;left:50%;top:50%;width:150px;height:150px;margin:-75px 0 0 -75px;z-index:7;
   pointer-events:none;filter:drop-shadow(0 0 1.5px rgba(0,0,0,.9))}
@@ -65,7 +65,7 @@ button{font:inherit;color:inherit}
 #viseur .marque{transform-origin:75px 75px}
 
 /* =========================================================
-   ARME EN 3D CSS
+   ARME EN 3D CSS  —  vue FPS
    ========================================================= */
 .scene{position:fixed;left:50%;top:50%;width:880px;height:412px;margin:-206px 0 0 -440px;
   transform:scale(var(--k));perspective:520px;perspective-origin:50% 50%;pointer-events:none;z-index:6}
@@ -109,17 +109,14 @@ button{font:inherit;color:inherit}
 
 .ps>.ar,.ms>.ar{background:radial-gradient(circle at 50% 52%,#f3f5f2 0 2px,#17181b 2.6px)}
 .ps>.dr,.ps>.ga,.ps>.ha,.ms>.dr,.ms>.ga,.ms>.ha{background:#1d1f22}
-
 .ca>.ha{background:repeating-linear-gradient(0deg,#050506 0 4px,#33363c 4px 11px)}
 .ca>.dr,.ca>.ga{background:linear-gradient(180deg,#26292e 0%,#17181b 40%,#0d0e10 100%)}
-
 .gr>.ar,.gr>.dr,.gr>.ga{background:
   repeating-linear-gradient(45deg,rgba(255,255,255,.085) 0 1px,transparent 1px 5px),
   repeating-linear-gradient(-45deg,rgba(255,255,255,.085) 0 1px,transparent 1px 5px),
   linear-gradient(90deg,#101113,#1b1d20 50%,#101113);
   box-shadow:inset 0 0 0 4px #202226,inset 0 0 0 5px rgba(0,0,0,.6)}
 .gr>.ha{background:#191b1e}
-
 .mg>.dr,.mg>.ga{background:
   radial-gradient(circle at 50% 50%,#d9b45c 0 2.3px,#030304 3px,transparent 3.6px) 0 4px/100% 16px repeat-y,
   linear-gradient(90deg,#1a1c1f,#26292d 50%,#1a1c1f)}
@@ -133,8 +130,7 @@ button{font:inherit;color:inherit}
 .flash::before{left:-80px;top:-80px;width:160px;height:160px;
   background:radial-gradient(circle,#fff 0 10%,#ffe08a 22%,rgba(255,150,40,.75) 42%,rgba(255,110,20,0) 70%)}
 .flash::after{left:-110px;top:-9px;width:220px;height:18px;border-radius:50%;
-  background:radial-gradient(ellipse,#fff 0,#ffd27a 40%,rgba(255,150,40,0) 72%);
-  box-shadow:0 0 0 0 transparent}
+  background:radial-gradient(ellipse,#fff 0,#ffd27a 40%,rgba(255,150,40,0) 72%)}
 
 .glissiere{transform:translateZ(var(--g-repos,0px));transition:transform .06s ease-out}
 .scene.vide{--g-repos:26px}
@@ -228,7 +224,6 @@ button{font:inherit;color:inherit}
 #eclair.on{animation:eclair .09s ease-out}
 @keyframes eclair{0%{opacity:1}100%{opacity:0}}
 
-/* Écran d'accueil */
 #accueil{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;
   background:rgba(8,9,10,.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);padding:16px}
 #accueil.cache{display:none}
@@ -239,7 +234,7 @@ button{font:inherit;color:inherit}
   font-size:21px;font-weight:700;padding:14px;letter-spacing:.02em}
 .gros:active{filter:brightness(.85)}
 .gros.second{background:transparent;color:var(--os);border:1px solid rgba(255,255,255,.35);font-size:16px;font-weight:400;padding:10px;margin-top:10px}
-#erreur{min-height:20px;margin-top:12px;font-size:14px;color:#ff9b8f;word-break:break-word}
+#erreur{min-height:20px;margin-top:12px;font-size:14px;color:#ff9b8f}
 
 #tourner{display:none;position:fixed;inset:0;z-index:60;background:#0b0c0d;align-items:center;justify-content:center;
   text-align:center;font-size:22px;padding:30px}
@@ -252,7 +247,6 @@ button{font:inherit;color:inherit}
 <div id="monde"></div>
 <div id="eclair"></div>
 
-<!-- ================== ARME ================== -->
 <div class="scene" id="scene">
  <div id="arme-recul" class="p3d">
   <div id="arme-pose" class="p3d">
@@ -288,7 +282,6 @@ button{font:inherit;color:inherit}
  </div>
 </div>
 
-<!-- ================== VISEUR ================== -->
 <svg id="viseur" viewBox="0 0 150 150" aria-hidden="true">
   <defs>
     <g id="traits">
@@ -305,7 +298,6 @@ button{font:inherit;color:inherit}
   </g>
 </svg>
 
-<!-- ================== INTERFACE ================== -->
 <div id="score" class="plaque"><b id="score-n">0</b><span>touches</span></div>
 <div id="munitions" class="plaque">
   <div class="ligne"><b id="mun-n">15</b><span id="mun-max">/ 15</span></div>
@@ -332,9 +324,6 @@ button{font:inherit;color:inherit}
 
 <script>
 'use strict';
-/* =========================================================
-   1. RÉGLAGES
-   ========================================================= */
 const CODE_TIR      = "";
 const CODE_RECHARGE = "";
 
@@ -348,9 +337,6 @@ const TAILLE_CIBLE   = 6;
 const ZONE_TOUCHE    = 1.0;
 const SONS           = true;
 
-/* =========================================================
-   2. OUTILS
-   ========================================================= */
 const $ = id => document.getElementById(id);
 const DEG = Math.PI / 180;
 const alea = (a, b) => a + Math.random() * (b - a);
@@ -358,22 +344,16 @@ const pscal = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 const dirDe = (yaw, pitch) => [Math.sin(yaw) * Math.cos(pitch), Math.cos(yaw) * Math.cos(pitch), Math.sin(pitch)];
 const norm = s => String(s).toUpperCase().replace(/0X/g, '').replace(/[^0-9A-F]/g, '');
 
-const scene = $('scene'), monde = $('monde'), viseur = $('viseur'), accueil = $('accueil');
+const scene = $('scene'), monde =$('monde'), viseur = $('viseur'), accueil =$('accueil');
 const video = $('camera');
 
 document.querySelectorAll('.b').forEach(b => {
   b.innerHTML = '<i class="ar"></i><i class="av"></i><i class="ha"></i><i class="ba"></i><i class="ga"></i><i class="dr"></i>';
 });
 
-/* =========================================================
-   3. ÉTAT DU JEU
-   ========================================================= */
 let munitions = MUNITIONS_MAX, score = 0;
 let rechargement = false, jeuActif = false;
 
-/* =========================================================
-   4. GYROSCOPE
-   ========================================================= */
 const orient = { a: 0, b: 0, g: 0, ok: false };
 const cam = { r: [1, 0, 0], u: [0, 1, 0], f: [0, 0, -1] };
 const base = { yaw: 0, pitch: 0 };
@@ -421,9 +401,6 @@ function recentrer() {
   placerCarre();
 }
 
-/* =========================================================
-   5. CIBLES
-   ========================================================= */
 const SVG_CIBLE = `
 <svg viewBox="0 0 100 125" aria-hidden="true">
   <rect x="45" y="96" width="10" height="29" fill="#6e5236"/><rect x="45" y="96" width="3.5" height="29" fill="#8a6a46"/>
@@ -547,9 +524,6 @@ function plusUn(x, y) {
   p.addEventListener('animationend', () => p.remove());
 }
 
-/* =========================================================
-   6. TIR ET RECHARGE
-   ========================================================= */
 function relancer(el, classe) { el.classList.remove(classe); void el.offsetWidth; el.classList.add(classe); }
 
 function tirer() {
@@ -588,17 +562,13 @@ function recharger() {
 function majMunitions() {
   $('mun-n').textContent = munitions;
   document.querySelectorAll('#pips i').forEach((p, i) => p.classList.toggle('vide', i >= munitions));
-  $('munitions').classList.toggle('bas', munitions <= 3);
-  $('message').classList.toggle('on', munitions === 0 && !rechargement);
+  $('munitions').classList.toggle('bas', munitions <= 3);$('message').classList.toggle('on', munitions === 0 && !rechargement);
 }
 const pips = $('pips');
 for (let i = 0; i < MUNITIONS_MAX; i++) pips.appendChild(document.createElement('i'));
 $('mun-max').textContent = '/ ' + MUNITIONS_MAX;
 $('mun-n').textContent = MUNITIONS_MAX;
 
-/* =========================================================
-   7. SONS
-   ========================================================= */
 let ac = null;
 function bruit(t0, duree, freq, gain, type) {
   const n = Math.max(1, Math.floor(ac.sampleRate * duree)), buf = ac.createBuffer(1, n, ac.sampleRate), d = buf.getChannelData(0);
@@ -623,9 +593,6 @@ function son(nom, d) {
   }
 }
 
-/* =========================================================
-   8. BLUETOOTH (Robust & Safe Error Handling for Bluefy)
-   ========================================================= */
 const nerf = { device: null, car: null };
 const historique = [];
 
@@ -648,134 +615,59 @@ function surNotification(e) {
 }
 
 function etatBluetooth(ok, texte) {
-  $('debug').classList.toggle('ok', ok);
-  $('bt-etat').textContent = texte;
+  $('debug').classList.toggle('ok', ok);$('bt-etat').textContent = texte;
   $('btn-reco').style.display = (!ok && nerf.device && jeuActif) ? 'block' : 'none';
 }
 
-// Safely extracts error descriptions whether `e` is an Error object, string, DOMException, or undefined
-function getErrorMessage(err) {
-  if (!err) return "Erreur Bluetooth inconnue";
-  if (typeof err === "string") return err;
-  if (err.message && typeof err.message === "string" && err.message.trim() !== "") {
-    return err.message;
-  }
-  if (err.name && typeof err.name === "string") {
-    return `${err.name}: ${JSON.stringify(err)}`;
-  }
-  try {
-    return JSON.stringify(err);
-  } catch (e2) {
-    return String(err);
-  }
-}
-
 async function choisirNerf() {
-  if (!navigator.bluetooth) {
-    throw new Error("L'API Web Bluetooth n'est pas disponible sur ce navigateur ou cette plateforme. Utilisez HTTPS.");
-  }
-  try {
-    nerf.device = await navigator.bluetooth.requestDevice({
-      acceptAllDevices: true,
-      optionalServices: [SERVICE_UUID]
-    });
-    if (nerf.device) {
-      nerf.device.removeEventListener('gattserverdisconnected', onDisconnected);
-      nerf.device.addEventListener('gattserverdisconnected', onDisconnected);
-    }
-  } catch (err) {
-    console.error("requestDevice error:", err);
-    throw new Error(getErrorMessage(err));
-  }
-}
-
-function onDisconnected() {
-  etatBluetooth(false, 'Nerf déconnecté');
+  nerf.device = await navigator.bluetooth.requestDevice({
+    acceptAllDevices: true,
+    optionalServices: [SERVICE_UUID]
+  });
+  nerf.device.addEventListener('gattserverdisconnected', () => etatBluetooth(false, 'Nerf déconnecté'));
 }
 
 async function connecterGatt() {
-  if (!nerf.device) {
-    throw new Error("Aucun appareil sélectionné.");
-  }
   etatBluetooth(false, 'Connexion au Nerf…');
-  
-  try {
-    if (!nerf.device.gatt) {
-      throw new Error("Objet GATT indisponible sur l'appareil.");
-    }
-    const serveur = await nerf.device.gatt.connect();
-    if (!servoir) {
-      throw new Error("Échec de connexion au serveur GATT.");
-    }
-    
-    const service = await serveur.getPrimaryService(SERVICE_UUID);
-    if (!service) {
-      throw new Error("Service GATT introuvable (Vérifiez le SERVICE_UUID).");
-    }
-
-    if (nerf.car) {
-      try {
-        nerf.car.removeEventListener('characteristicvaluechanged', surNotification);
-      } catch (e3) {}
-    }
-
-    nerf.car = await service.getCharacteristic(CHARACTERISTIC_UUID);
-    if (!nerf.car) {
-      throw new Error("Caractéristique GATT introuvable.");
-    }
-
-    nerf.car.removeEventListener('characteristicvaluechanged', surNotification);
-    nerf.car.addEventListener('characteristicvaluechanged', surNotification);
-    await nerf.car.startNotifications();
-    
-    etatBluetooth(true, 'Nerf : ' + (nerf.device.name || 'connecté'));
-  } catch (err) {
-    console.error("GATT connect error:", err);
-    throw new Error(getErrorMessage(err));
-  }
+  const serveur = await nerf.device.gatt.connect(); // <-- CORRIGÉ ICI (serveur au lieu de servoir)
+  const service = await serveur.getPrimaryService(SERVICE_UUID);
+  if (nerf.car) nerf.car.removeEventListener('characteristicvaluechanged', surNotification);
+  nerf.car = await service.getCharacteristic(CHARACTERISTIC_UUID);
+  nerf.car.addEventListener('characteristicvaluechanged', surNotification);
+  await nerf.car.startNotifications();
+  etatBluetooth(true, 'Nerf : ' + (nerf.device.name || 'connecté'));
 }
 
-/* =========================================================
-   9. DÉMARRAGE
-   ========================================================= */
 async function demarrerCamera() {
-  try {
-    const flux = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false
-    });
-    video.srcObject = flux;
-    await video.play();
-  } catch (err) {
-    throw new Error("Caméra indisponible : " + getErrorMessage(err));
-  }
+  const flux = await navigator.mediaDevices.getUserMedia({
+    video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false
+  });
+  video.srcObject = flux;
+  await video.play();
 }
 
 async function demanderOrientation() {
   if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-    try {
-      const r = await DeviceOrientationEvent.requestPermission();
-      if (r !== 'granted') throw new Error('Permission gyroscope refusée.');
-    } catch (err) {
-      throw new Error("Gyroscope refusé ou non supporté : " + getErrorMessage(err));
-    }
+    const r = await DeviceOrientationEvent.requestPermission();
+    if (r !== 'granted') throw new Error('Accès au gyroscope refusé.');
   }
 }
 
+let verrou = null;
 async function garderEcranAllume() {
-  try { if (navigator.wakeLock) await navigator.wakeLock.request('screen'); } catch (e) {}
+  try { verrou = await navigator.wakeLock.request('screen'); } catch (e) {}
 }
 document.addEventListener('visibilitychange', () => { if (!document.hidden && jeuActif) garderEcranAllume(); });
 
 async function lancerJeu() {
-  await demanderOrientation();
-  await demarrerCamera();
+  try { await demanderOrientation(); } catch (e) { throw new Error(e.message); }
+  try { await demarrerCamera(); }
+  catch (e) { throw new Error('Caméra indisponible : autorise-la pour ce site.'); }
   if (SONS) { try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); ac.resume(); } catch (e) {} }
   garderEcranAllume();
   accueil.classList.add('cache');
   jeuActif = true;
-  if (nerf.device && nerf.device.gatt && nerf.device.gatt.connected) {
-    etatBluetooth(true, 'Nerf : ' + (nerf.device.name || 'connecté'));
-  }
+  if (nerf.device) etatBluetooth(nerf.device.gatt.connected, $('bt-etat').textContent);
   const t0 = performance.now();
   (function attendre() {
     if (orient.ok || performance.now() - t0 > 1200) {
@@ -791,34 +683,25 @@ function afficherErreur(msg) { $('erreur').textContent = msg; }
 
 $('btn-nerf').addEventListener('click', async () => {
   afficherErreur('');
+  if (!navigator.bluetooth) { afficherErreur('Web Bluetooth indisponible.'); return; }
   try {
-    if (!nerf.device) {
-      await choisirNerf();
-    }
-    await connecterGatt();
-    await lancerJeu();
-  } catch (e) {
-    const msgFinal = getErrorMessage(e);
-    console.error("Erreur globale de connexion Nerf:", e);
-    afficherErreur('Connexion nerf impossible: ' + msgFinal);
-  }
+    if (!nerf.device) await choisirNerf();
+  } catch (e) { afficherErreur(e.name === 'NotFoundError' ? 'Aucun appareil choisi.' : 'Bluetooth : ' + e.message); return; }
+  try { await connecterGatt(); }
+  catch (e) { afficherErreur('Connexion au Nerf impossible : ' + e.message); return; }
+  try { await lancerJeu(); } catch (e) { afficherErreur(e.message); }
 });
 
 $('btn-seul').addEventListener('click', async () => {
   afficherErreur('');
-  try { await lancerJeu(); } catch (e) { afficherErreur(getErrorMessage(e)); }
+  try { await lancerJeu(); } catch (e) { afficherErreur(e.message); }
 });
 
 $('btn-reco').addEventListener('click', async () => {
-  try {
-    await connecterGatt();
-  } catch (e) {
-    etatBluetooth(false, 'Reconnexion impossible: ' + getErrorMessage(e));
-  }
+  try { await connecterGatt(); } catch (e) { etatBluetooth(false, 'Reconnexion impossible'); }
 });
 
-$('btn-centre').addEventListener('click', recentrer);
-$('btn-plein').addEventListener('click', async () => {
+$('btn-centre').addEventListener('click', recentrer);$('btn-plein').addEventListener('click', async () => {
   try {
     if (document.fullscreenElement) await document.exitFullscreen();
     else {
@@ -835,9 +718,6 @@ addEventListener('keydown', e => {
   else if (e.code === 'KeyC') recentrer();
 });
 
-/* =========================================================
-   10. BOUCLE D'AFFICHAGE
-   ========================================================= */
 function boucle() {
   if (orient.ok) calculerCamera();
   for (const c of cibles) placer(c);
@@ -852,3 +732,4 @@ boucle();
 </script>
 </body>
 </html>
+
